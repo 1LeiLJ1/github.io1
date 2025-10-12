@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<!-- saved from url=(0058)file:///C:/Users/%E9%9B%B7%E6%A2%81%E6%9D%B0/treasure.html -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神秘寻宝大冒险 - 全景地图</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #ffcc00;
+            background: linear-gradient(to right, #ffcc00, #ff9900);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #cccccc;
+        }
+        
+        /* 全景地图样式 */
+        .panorama-map {
+            width: 100%;
+            height: 500px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="%231a2a6c"/><path d="M50,50 L350,50 L350,250 L50,250 Z" fill="none" stroke="%23D2B48C" stroke-width="2"/><circle cx="100" cy="100" r="8" fill="%23FFD700"/><circle cx="200" cy="150" r="8" fill="%23FFD700"/><circle cx="300" cy="200" r="8" fill="%23FFD700"/><circle cx="150" cy="200" r="8" fill="%23FFD700"/><circle cx="250" cy="100" r="8" fill="%23FFD700"/></svg>') center/cover no-repeat;
+            border: 3px solid #8B4513;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .location {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 215, 0, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .location:hover {
+            transform: scale(1.2);
+            background: rgba(255, 215, 0, 0.9);
+        }
+        
+        .location-1 {
+            top: 20%;
+            left: 20%;
+        }
+        
+        .location-2 {
+            top: 40%;
+            left: 50%;
+        }
+        
+        .location-3 {
+            top: 60%;
+            left: 30%;
+        }
+        
+        .location-4 {
+            top: 30%;
+            left: 70%;
+        }
+        
+        .location-5 {
+            top: 70%;
+            left: 60%;
+        }
+        
+        /* 地点页面样式 */
+        .location-page {
+            display: none;
+            width: 100%;
+        }
+        
+        .location-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .back-button {
+            padding: 10px 20px;
+            background: linear-gradient(to bottom, #666, #444);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: linear-gradient(to bottom, #777, #555);
+        }
+        
+        /* 音乐控制样式 */
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .music-icon {
+            font-size: 24px;
+            color: #ffcc00;
+        }
+        
+        /* 原寻宝游戏样式保留 */
+        .treasure-map {
+            width: 100%;
+            height: 200px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%238B4513"/><path d="M10,10 L90,10 L90,90 L10,90 Z" fill="none" stroke="%23D2B48C" stroke-width="2"/><circle cx="50" cy="50" r="5" fill="%23FFD700"/><path d="M30,30 L70,70 M70,30 L30,70" stroke="%23FFD700" stroke-width="2"/></svg>') center/cover no-repeat;
+            border: 3px solid #8B4513;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            background: linear-gradient(to bottom, #ff9900, #cc6600);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(to bottom, #ffaa00, #dd7700);
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background: #333;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #ff9900, #ffcc00);
+            border-radius: 5px;
+            transition: width 0.5s;
+        }
+        
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .step {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            opacity: 0.5;
+            transition: all 0.5s;
+            transform: translateX(-20px);
+        }
+        
+        .step.active {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(0);
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.5);
+        }
+        
+        .step.completed {
+            opacity: 0.8;
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            background: #444;
+            flex-shrink: 0;
+        }
+        
+        .step.active .step-icon {
+            background: linear-gradient(135deg, #ff9900, #ffcc00);
+            animation: pulse 1.5s infinite;
+        }
+        
+        .step.completed .step-icon {
+            background: linear-gradient(135deg, #00cc00, #66ff66);
+        }
+        
+        .step-content {
+            flex-grow: 1;
+        }
+        
+        .step-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .step-description {
+            color: #cccccc;
+            font-size: 0.9rem;
+        }
+        
+        .treasure-result {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 204, 0, 0.2);
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .treasure-result h2 {
+            color: #ffcc00;
+            margin-bottom: 10px;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes sparkle {
+            0% { opacity: 0; transform: translateY(0) rotate(0); }
+            50% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffcc00;
+            border-radius: 50%;
+            animation: sparkle 1.5s infinite;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            button {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+            
+            .panorama-map {
+                height: 300px;
+            }
+            
+            .location {
+                width: 40px;
+                height: 40px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 全景地图页面 -->
+    <div id="panoramaPage" style="display: block;">
+        <h1>神秘寻宝大冒险 - 全景地图</h1>
+        <p class="subtitle">探索不同地点，寻找隐藏的宝藏！</p>
+        
+        <div class="container">
+            <div class="panorama-map">
+                <div class="location location-1" data-location="1">古老图书馆</div>
+                <div class="location location-2" data-location="2">月影峡谷</div>
+                <div class="location location-3" data-location="3">神秘神庙</div>
+                <div class="location location-4" data-location="4">密林深处</div>
+                <div class="location location-5" data-location="5">宝藏洞穴</div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="overallProgressBar"></div>
+            </div>
+            <p style="text-align: center; margin-top: 10px;">整体进度: <span id="overallProgressText">0%</span></p>
+        </div>
+    </div>
+    
+    <!-- 地点1页面 - 古老图书馆 -->
+    <div id="location1Page" class="location-page" style="display: none;">
+        <div class="location-header">
+            <button class="back-button">返回地图</button>
+            <h2>古老图书馆</h2>
+            <div></div> <!-- 占位元素，保持布局平衡 -->
+        </div>
+        
+        <div class="container">
+            <div class="treasure-map" id="treasureMap1">
+                <!-- 动态添加火花效果 -->
+            <div class="sparkle" style="left: 98.1601%; top: 6.29553%; animation-delay: 0.599156s; width: 12.0559px; height: 12.0559px;"></div><div class="sparkle" style="left: 42.4862%; top: 42.4273%; animation-delay: 1.23456s; width: 10.807px; height: 10.807px;"></div><div class="sparkle" style="left: 57.2396%; top: 37.6098%; animation-delay: 0.0485945s; width: 13.0725px; height: 13.0725px;"></div><div class="sparkle" style="left: 53.8662%; top: 14.3034%; animation-delay: 0.995155s; width: 9.03102px; height: 9.03102px;"></div><div class="sparkle" style="left: 22.7108%; top: 31.9785%; animation-delay: 1.70829s; width: 5.32757px; height: 5.32757px;"></div><div class="sparkle" style="left: 61.5038%; top: 41.9205%; animation-delay: 1.067s; width: 10.1806px; height: 10.1806px;"></div><div class="sparkle" style="left: 85.1561%; top: 63.2195%; animation-delay: 0.942343s; width: 7.01544px; height: 7.01544px;"></div><div class="sparkle" style="left: 80.5877%; top: 76.7633%; animation-delay: 0.604878s; width: 10.2389px; height: 10.2389px;"></div><div class="sparkle" style="left: 30.9025%; top: 99.6191%; animation-delay: 1.1222s; width: 8.12964px; height: 8.12964px;"></div><div class="sparkle" style="left: 2.53733%; top: 72.6737%; animation-delay: 0.663218s; width: 9.45089px; height: 9.45089px;"></div><div class="sparkle" style="left: 16.4208%; top: 84.2884%; animation-delay: 1.81326s; width: 10.7204px; height: 10.7204px;"></div><div class="sparkle" style="left: 89.2196%; top: 37.8584%; animation-delay: 1.60372s; width: 9.86237px; height: 9.86237px;"></div><div class="sparkle" style="left: 16.804%; top: 50.0132%; animation-delay: 0.740133s; width: 11.5714px; height: 11.5714px;"></div><div class="sparkle" style="left: 31.355%; top: 33.1662%; animation-delay: 1.50521s; width: 11.0816px; height: 11.0816px;"></div><div class="sparkle" style="left: 78.9481%; top: 45.0742%; animation-delay: 0.445477s; width: 10.2623px; height: 10.2623px;"></div><div class="sparkle" style="left: 77.6262%; top: 39.7027%; animation-delay: 1.94799s; width: 13.5859px; height: 13.5859px;"></div><div class="sparkle" style="left: 4.94862%; top: 91.0996%; animation-delay: 1.09075s; width: 5.15857px; height: 5.15857px;"></div><div class="sparkle" style="left: 21.5168%; top: 25.7903%; animation-delay: 0.707265s; width: 7.49643px; height: 7.49643px;"></div><div class="sparkle" style="left: 87.1041%; top: 1.80961%; animation-delay: 1.46546s; width: 9.96902px; height: 9.96902px;"></div><div class="sparkle" style="left: 54.1349%; top: 81.7307%; animation-delay: 0.14119s; width: 9.11778px; height: 9.11778px;"></div></div>
+            
+            <div class="controls">
+                <button id="startBtn1">开始寻宝</button>
+                <button id="resetBtn1" disabled="">重新开始</button>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar1"></div>
+            </div>
+            
+            <div class="steps" id="stepsContainer1">
+                <div class="step" id="step1-1">
+                    <div class="step-icon">1</div>
+                    <div class="step-content">
+                        <div class="step-title">寻找古籍</div>
+                        <div class="step-description">在古老的书架上寻找关于宝藏的古籍...</div>
+                    </div>
+                </div>
+                
+                <div class="step" id="step1-2">
+                    <div class="step-icon">2</div>
+                    <div class="step-content">
+                        <div class="step-title">解读密码</div>
+                        <div class="step-description">破译古籍中的古老密码...</div>
+                    </div>
+                </div>
+                
+                <div class="step" id="step1-3">
+                    <div class="step-icon">3</div>
+                    <div class="step-content">
+                        <div class="step-title">找到线索</div>
+                        <div class="step-description">根据密码找到隐藏的线索...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="treasure-result" id="treasureResult1">
+                <h2 id="resultTitle1">寻宝结果</h2>
+                <p id="resultMessage1"></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 地点2页面 - 月影峡谷 -->
+    <div id="location2Page" class="location-page" style="display: none;">
+        <div class="location-header">
+            <button class="back-button">返回地图</button>
+            <h2>月影峡谷</h2>
+            <div></div>
+        </div>
+        
+        <div class="container">
+            <div class="treasure-map" id="treasureMap2">
+                <!-- 动态添加火花效果 -->
+            <div class="sparkle" style="left: 59.3917%; top: 70.0454%; animation-delay: 0.459802s; width: 11.8885px; height: 11.8885px;"></div><div class="sparkle" style="left: 84.1067%; top: 51.1479%; animation-delay: 0.0811411s; width: 9.16696px; height: 9.16696px;"></div><div class="sparkle" style="left: 31.4067%; top: 23.956%; animation-delay: 1.23156s; width: 6.71469px; height: 6.71469px;"></div><div class="sparkle" style="left: 88.2216%; top: 33.7016%; animation-delay: 1.02399s; width: 12.8787px; height: 12.8787px;"></div><div class="sparkle" style="left: 75.2555%; top: 88.3926%; animation-delay: 0.182504s; width: 8.28667px; height: 8.28667px;"></div><div class="sparkle" style="left: 76.2075%; top: 55.9245%; animation-delay: 0.497389s; width: 13.6386px; height: 13.6386px;"></div><div class="sparkle" style="left: 77.6233%; top: 33.8467%; animation-delay: 0.945717s; width: 11.6404px; height: 11.6404px;"></div><div class="sparkle" style="left: 80.0591%; top: 97.468%; animation-delay: 0.494721s; width: 6.04193px; height: 6.04193px;"></div><div class="sparkle" style="left: 44.4%; top: 48.4831%; animation-delay: 0.636168s; width: 5.5802px; height: 5.5802px;"></div><div class="sparkle" style="left: 85.5258%; top: 95.4712%; animation-delay: 1.57667s; width: 5.34681px; height: 5.34681px;"></div><div class="sparkle" style="left: 78.9492%; top: 67.8925%; animation-delay: 0.535873s; width: 14.0516px; height: 14.0516px;"></div><div class="sparkle" style="left: 88.5967%; top: 49.6854%; animation-delay: 1.40673s; width: 8.44947px; height: 8.44947px;"></div><div class="sparkle" style="left: 57.7415%; top: 91.5811%; animation-delay: 0.51128s; width: 10.9792px; height: 10.9792px;"></div><div class="sparkle" style="left: 14.5489%; top: 91.9281%; animation-delay: 0.781888s; width: 9.99451px; height: 9.99451px;"></div><div class="sparkle" style="left: 63.9261%; top: 70.989%; animation-delay: 0.172719s; width: 5.03008px; height: 5.03008px;"></div><div class="sparkle" style="left: 75.0862%; top: 72.0446%; animation-delay: 0.463516s; width: 10.7766px; height: 10.7766px;"></div><div class="sparkle" style="left: 96.3428%; top: 49.5594%; animation-delay: 1.00027s; width: 12.8269px; height: 12.8269px;"></div><div class="sparkle" style="left: 97.6788%; top: 28.5003%; animation-delay: 1.6973s; width: 13.6204px; height: 13.6204px;"></div><div class="sparkle" style="left: 52.1781%; top: 10.1569%; animation-delay: 1.63578s; width: 11.0371px; height: 11.0371px;"></div><div class="sparkle" style="left: 17.653%; top: 45.1295%; animation-delay: 1.94423s; width: 5.78801px; height: 5.78801px;"></div></div>
+            
+            <div class="controls">
+                <button id="startBtn2">开始寻宝</button>
+                <button id="resetBtn2" disabled="">重新开始</button>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar2"></div>
+            </div>
+            
+            <div class="steps" id="stepsContainer2">
+                <div class="step" id="step2-1">
+                    <div class="step-icon">1</div>
+                    <div class="step-content">
+                        <div class="step-title">探索峡谷</div>
+                        <div class="step-description">在峡谷中寻找隐藏的入口...</div>
+                    </div>
+                </div>
+                
+                <div class="step" id="step2-2">
+                    <div class="step-icon">2</div>
+                    <div class="step-content">
+                        <div class="step-title">解开谜题</div>
+                        <div class="step-description">解开峡谷中的月光谜题...</div>
+                    </div>
+                </div>
+                
+                <div class="step" id="step2-3">
+                    <div class="step-icon">3</div>
+                    <div class="step-content">
+                        <div class="step-title">找到宝藏</div>
+                        <div class="step-description">根据月光指引找到隐藏的宝藏...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="treasure-result" id="treasureResult2">
+                <h2 id="resultTitle2">寻宝结果</h2>
+                <p id="resultMessage2"></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 地点3页面 - 神秘神庙 -->
+    <div id="location3Page" class="location-page" style="display: none;">
+        <div class="location-header">
+            <button class="back-button">返回地图</button>
+            <h2>神秘神庙</h2>
+            <div></div>
+        </div>
+        
+        <div class="container">
+            <div class="treasure-map" id="treasureMap3">
+                <!-- 动态添加火花效果 -->
+            <div class="sparkle" style="left: 77.5728%; top: 74.7033%; animation-delay: 1.93299s; width: 14.9305px; height: 14.9305px;"></div><div class="sparkle" style="left: 81.3944%; top: 8.11394%; animation-delay: 0.512537s; width: 13.9046px; height: 13.9046px;"></div><div class="sparkle" style="left: 49.7761%; top: 42.334%; animation-delay: 1.22609s; width: 14.3784px; height: 14.3784px;"></div><div class="sparkle" style="left: 72.2908%; top: 83.5976%; animation-delay: 1.82772s; width: 9.25282px; height: 9.25282px;"></div><div class="sparkle" style="left: 3.91101%; top: 86.0576%; animation-delay: 0.508656s; width: 9.10773px; height: 9.10773px;"></div><div class="sparkle" style="left: 14.2112%; top: 82.7409%; animation-delay: 0.901803s; width: 5.04321px; height: 5.04321px;"></div><div class="sparkle" style="left: 77.9203%; top: 54.5811%; animation-delay: 0.715386s; width: 6.18292px; height: 6.18292px;"></div><div class="sparkle" style="left: 18.0063%; top: 92.6728%; animation-delay: 1.20561s; width: 10.5337px; height: 10.5337px;"></div><div class="sparkle" style="left: 97.3968%; top: 35.6374%; animation-delay: 0.646557s; width: 5.07856px; height: 5.07856px;"></div><div class="sparkle" style="left: 1.05986%; top: 66.5594%; animation-delay: 1.13199s; width: 14.6215px; height: 14.6215px;"></div><div class="sparkle" style="left: 90.511%; top: 29.1142%; animation-delay: 0.164598s; width: 6.17722px; height: 6.17722px;"></div><div class="sparkle" style="left: 67.186%; top: 8.26739%; animation-delay: 1.21405s; width: 5.50245px; height: 5.50245px;"></div><div class="sparkle" style="left: 76.5514%; top: 44.186%; animation-delay: 0.200426s; width: 11.2022px; height: 11.2022px;"></div><div class="sparkle" style="left: 85.3821%; top: 82.3906%; animation-delay: 1.38906s; width: 8.63609px; height: 8.63609px;"></div><div class="sparkle" style="left: 60.5938%; top: 54.378%; animation-delay: 1.9468s; width: 7.04689px; height: 7.04689px;"></div><div class="sparkle" style="left: 94.9591%; top: 10.9612%; animation-delay: 1.51194s; width: 13.908px; height: 13.908px;"></div><div class="sparkle" style="left: 85.558%; top: 53.6634%; animation-delay: 1.14478s; width: 5.55522px; height: 5.55522px;"></div><div class="sparkle" style="left: 24.6151%; top: 98.3447%; animation-delay: 0.93347s; width: 6.268px; height: 6.268px;"></div><div class="sparkle" style="left: 28.0134%; top: 42.5457%; animation-delay: 1.31809s; width: 9.77176px; height: 9.77176px;"></div><div class="sparkle" style="left: 14.364%; top: 83.5573%; animation-delay: 1.9338s; width: 12.7607px; height: 12.7607px;"></div></div>
+            
+            <div class="controls">
+                <button id="startBtn3">开始寻宝</button>
+                <button id="resetBtn3" disabled="">重新开始</button>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar3"></div>
+            </div>
+            
+            <div class="steps" id="stepsContainer3">
+                <div class="step" id="step3-1">
+                    <div class="step-icon">1</div>
+                    <div class="step-content">
+                        <div class="step-title">进入神庙</div>
+                        <div class="step-description">找到神庙的入口并进入...</div>
+                    </div>
+                </div>
+                
+                <div class="step" id="step3-2">
+                    <div class="step-icon">2</div>
+                    <div class="step-content">
+                        <div class="step-title">避开陷阱</div>
+                        <div class="step-description">小心避开神庙中的古老陷阱...</div>
+                    </div>
+                </div>
+                
+                <div class="step" id="step3-3">
+                    <div class="step-icon">3</div>
+                    <div class="step-content">
+                        <div class="step-title">找到圣物</div>
+                        <div class="step-description">在神庙深处找到神秘的圣物...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="treasure-result" id="treasureResult3">
+                <h2 id="resultTitle3">寻宝结果</h2>
+                <p id="resultMessage3"></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 音乐控制 -->
+    <div class="music-control" id="musicControl">
+        <div class="music-icon">♫</div>
+    </div>
+
+    <script>
+        // 游戏状态管理
+        const GameState = {
+            currentPage: 'panorama',
+            locations: {
+                1: { completed: false, progress: 0 },
+                2: { completed: false, progress: 0 },
+                3: { completed: false, progress: 0 },
+                4: { completed: false, progress: 0 },
+                5: { completed: false, progress: 0 }
+            },
+            musicEnabled: true
+        };
+        
+        // 背景音乐 - 使用公共领域的音乐URL
+        const backgroundMusic = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+        backgroundMusic.loop = true;
+        backgroundMusic.volume = 0.5;
+        
+        // 页面元素
+        const panoramaPage = document.getElementById('panoramaPage');
+        const locationPages = {
+            1: document.getElementById('location1Page'),
+            2: document.getElementById('location2Page'),
+            3: document.getElementById('location3Page')
+        };
+        
+        const musicControl = document.getElementById('musicControl');
+        const overallProgressBar = document.getElementById('overallProgressBar');
+        const overallProgressText = document.getElementById('overallProgressText');
+        
+        // 保存游戏状态到localStorage
+        function saveGameState() {
+            localStorage.setItem('treasureGameState', JSON.stringify(GameState));
+        }
+        
+        // 从localStorage加载游戏状态
+        function loadGameState() {
+            const savedState = localStorage.getItem('treasureGameState');
+            if (savedState) {
+                const parsedState = JSON.parse(savedState);
+                Object.assign(GameState, parsedState);
+                
+                // 恢复音乐状态
+                if (GameState.musicEnabled) {
+                    backgroundMusic.play().catch(e => console.log("自动播放被阻止:", e));
+                } else {
+                    backgroundMusic.pause();
+                    musicControl.querySelector('.music-icon').textContent = '♫';
+                }
+                
+                // 更新整体进度
+                updateOverallProgress();
+            }
+        }
+        
+        // 更新整体进度
+        function updateOverallProgress() {
+            let totalProgress = 0;
+            let completedCount = 0;
+            
+            for (const locationId in GameState.locations) {
+                totalProgress += GameState.locations[locationId].progress;
+                if (GameState.locations[locationId].completed) {
+                    completedCount++;
+                }
+            }
+            
+            const overallProgress = totalProgress / Object.keys(GameState.locations).length;
+            overallProgressBar.style.width = `${overallProgress}%`;
+            overallProgressText.textContent = `${Math.round(overallProgress)}%`;
+            
+            // 更新地点标记
+            for (const locationId in GameState.locations) {
+                const locationElement = document.querySelector(`.location-${locationId}`);
+                if (GameState.locations[locationId].completed) {
+                    locationElement.style.background = 'rgba(0, 255, 0, 0.7)';
+                } else if (GameState.locations[locationId].progress > 0) {
+                    locationElement.style.background = 'rgba(255, 165, 0, 0.7)';
+                }
+            }
+        }
+        
+        // 显示指定页面
+        function showPage(pageId) {
+            // 隐藏所有页面
+            panoramaPage.style.display = 'none';
+            for (const id in locationPages) {
+                if (locationPages[id]) {
+                    locationPages[id].style.display = 'none';
+                }
+            }
+            
+            // 显示指定页面
+            if (pageId === 'panorama') {
+                panoramaPage.style.display = 'block';
+                GameState.currentPage = 'panorama';
+            } else if (locationPages[pageId]) {
+                locationPages[pageId].style.display = 'block';
+                GameState.currentPage = pageId;
+                
+                // 播放当前地点的背景音乐
+                if (GameState.musicEnabled) {
+                    backgroundMusic.play().catch(e => console.log("自动播放被阻止:", e));
+                }
+            }
+            
+            saveGameState();
+        }
+        
+        // 初始化地点页面
+        function initLocationPage(locationId) {
+            const startBtn = document.getElementById(`startBtn${locationId}`);
+            const resetBtn = document.getElementById(`resetBtn${locationId}`);
+            const progressBar = document.getElementById(`progressBar${locationId}`);
+            const treasureResult = document.getElementById(`treasureResult${locationId}`);
+            const resultMessage = document.getElementById(`resultMessage${locationId}`);
+            
+            // 步骤元素
+            const steps = [
+                document.getElementById(`step${locationId}-1`),
+                document.getElementById(`step${locationId}-2`),
+                document.getElementById(`step${locationId}-3`)
+            ];
+            
+            // 添加火花效果
+            function addSparkles(mapId) {
+                const treasureMap = document.getElementById(mapId);
+                // 清除现有的火花
+                const existingSparkles = treasureMap.querySelectorAll('.sparkle');
+                existingSparkles.forEach(sparkle => sparkle.remove());
+                
+                for (let i = 0; i < 20; i++) {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.style.left = Math.random() * 100 + '%';
+                    sparkle.style.top = Math.random() * 100 + '%';
+                    sparkle.style.animationDelay = Math.random() * 2 + 's';
+                    sparkle.style.width = Math.random() * 10 + 5 + 'px';
+                    sparkle.style.height = sparkle.style.width;
+                    treasureMap.appendChild(sparkle);
+                }
+            }
+            
+            // 更新进度条
+            function updateProgress(step) {
+                const progress = (step / steps.length) * 100;
+                progressBar.style.width = progress + '%';
+                GameState.locations[locationId].progress = progress;
+                updateOverallProgress();
+                saveGameState();
+            }
+            
+            // 激活当前步骤
+            function activateStep(stepIndex) {
+                steps.forEach((step, index) => {
+                    step.classList.remove('active', 'completed');
+                    if (index < stepIndex) {
+                        step.classList.add('completed');
+                    } else if (index === stepIndex) {
+                        step.classList.add('active');
+                    }
+                });
+                
+                updateProgress(stepIndex);
+            }
+            
+            // 显示结果
+            function showResult(message, isSuccess) {
+                resultMessage.textContent = message;
+                treasureResult.style.display = 'block';
+                treasureResult.style.background = isSuccess 
+                    ? 'rgba(0, 255, 0, 0.2)' 
+                    : 'rgba(255, 0, 0, 0.2)';
+                
+                const resultTitle = document.getElementById(`resultTitle${locationId}`);
+                resultTitle.textContent = isSuccess ? '寻宝成功!' : '寻宝失败';
+                resultTitle.style.color = isSuccess ? '#00ff00' : '#ff0000';
+                
+                if (isSuccess) {
+                    GameState.locations[locationId].completed = true;
+                    updateOverallProgress();
+                    saveGameState();
+                    addSparkles(`treasureMap${locationId}`);
+                }
+            }
+            
+            // 重置游戏
+            function resetGame() {
+                steps.forEach(step => {
+                    step.classList.remove('active', 'completed');
+                    // 重置步骤描述
+                    const stepDescriptions = [
+                        "在古老的书架上寻找关于宝藏的古籍...",
+                        "破译古籍中的古老密码...",
+                        "根据密码找到隐藏的线索..."
+                    ];
+                    
+                    if (locationId === '2') {
+                        stepDescriptions[0] = "在峡谷中寻找隐藏的入口...";
+                        stepDescriptions[1] = "解开峡谷中的月光谜题...";
+                        stepDescriptions[2] = "根据月光指引找到隐藏的宝藏...";
+                    } else if (locationId === '3') {
+                        stepDescriptions[0] = "找到神庙的入口并进入...";
+                        stepDescriptions[1] = "小心避开神庙中的古老陷阱...";
+                        stepDescriptions[2] = "在神庙深处找到神秘的圣物...";
+                    }
+                    
+                    const index = parseInt(step.id.split('-')[1]) - 1;
+                    step.querySelector('.step-description').textContent = stepDescriptions[index];
+                });
+                
+                progressBar.style.width = '0%';
+                treasureResult.style.display = 'none';
+                startBtn.disabled = false;
+                resetBtn.disabled = true;
+                
+                // 清除火花效果
+                const mapId = `treasureMap${locationId}`;
+                const treasureMap = document.getElementById(mapId);
+                const sparkles = treasureMap.querySelectorAll('.sparkle');
+                sparkles.forEach(sparkle => sparkle.remove());
+                
+                // 重置游戏状态
+                GameState.locations[locationId].progress = 0;
+                GameState.locations[locationId].completed = false;
+                updateOverallProgress();
+                saveGameState();
+            }
+            
+            // 寻宝过程
+            async function findTreasure() {
+                try {
+                    startBtn.disabled = true;
+                    resetBtn.disabled = true;
+                    
+                    // 步骤1
+                    activateStep(0);
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    
+                    let step1Result = "找到了一本古老的藏宝图，上面标记着神秘的符号...";
+                    if (locationId === '2') {
+                        step1Result = "在峡谷的岩壁上发现了一个隐藏的入口，被藤蔓覆盖着...";
+                    } else if (locationId === '3') {
+                        step1Result = "找到了神庙的入口，门上刻着古老的符文...";
+                    }
+                    
+                    steps[0].querySelector('.step-description').textContent = step1Result;
+                    
+                    // 步骤2
+                    activateStep(1);
+                    await new Promise(resolve => setTimeout(resolve, 2500));
+                    
+                    let step2Result = "成功解读了符号，指向月影峡谷的一个隐藏地点...";
+                    if (locationId === '2') {
+                        step2Result = "月光照射在岩壁上，显现出隐藏的谜题图案...";
+                    } else if (locationId === '3') {
+                        step2Result = "小心避开了地上的压力板陷阱，继续前进...";
+                    }
+                    
+                    steps[1].querySelector('.step-description').textContent = step2Result;
+                    
+                    // 步骤3
+                    activateStep(2);
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+                    
+                    let step3Result = "在书架后面找到了一个隐藏的盒子，里面有一把古老的钥匙!";
+                    let successMessage = "恭喜!你找到了古老图书馆的宝藏——一把神秘的钥匙!";
+                    
+                    if (locationId === '2') {
+                        step3Result = "根据月光指引，在洞穴深处找到了一个闪闪发光的宝箱!";
+                        successMessage = "恭喜!你找到了月影峡谷的宝藏——一颗月光宝石!";
+                    } else if (locationId === '3') {
+                        step3Result = "在神庙的祭坛上找到了一个古老的圣物盒!";
+                        successMessage = "恭喜!你找到了神秘神庙的宝藏——神圣护身符!";
+                    }
+                    
+                    steps[2].querySelector('.step-description').textContent = step3Result;
+                    
+                    // 完成所有步骤
+                    updateProgress(steps.length);
+                    showResult(successMessage, true);
+                } catch (error) {
+                    showResult(`任务失败: ${error}`, false);
+                } finally {
+                    resetBtn.disabled = false;
+                }
+            }
+            
+            // 事件监听
+            startBtn.addEventListener('click', findTreasure);
+            resetBtn.addEventListener('click', resetGame);
+            
+            // 初始化火花效果
+            addSparkles(`treasureMap${locationId}`);
+        }
+        
+        // 初始化
+        function init() {
+            // 加载保存的游戏状态
+            loadGameState();
+            
+            // 初始化地点页面
+            initLocationPage(1);
+            initLocationPage(2);
+            initLocationPage(3);
+            
+            // 地点点击事件
+            document.querySelectorAll('.location').forEach(location => {
+                location.addEventListener('click', function() {
+                    const locationId = this.getAttribute('data-location');
+                    showPage(locationId);
+                });
+            });
+            
+            // 返回按钮事件
+            document.querySelectorAll('.back-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    showPage('panorama');
+                });
+            });
+            
+            // 音乐控制
+            musicControl.addEventListener('click', function() {
+                GameState.musicEnabled = !GameState.musicEnabled;
+                
+                if (GameState.musicEnabled) {
+                    backgroundMusic.play().catch(e => console.log("自动播放被阻止:", e));
+                    musicControl.querySelector('.music-icon').textContent = '♪';
+                } else {
+                    backgroundMusic.pause();
+                    musicControl.querySelector('.music-icon').textContent = '♫';
+                }
+                
+                saveGameState();
+            });
+            
+            // 初始显示全景页面
+            showPage('panorama');
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+
+</body></html>
